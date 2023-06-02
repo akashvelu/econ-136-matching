@@ -1,7 +1,7 @@
 import pickle
 
-from ..utils import get_permutation
-from matches import Matches
+from utils import get_permutation
+from matching.matches import Matches
 
 
 class GreedyMatching:
@@ -10,11 +10,14 @@ class GreedyMatching:
     methods.
     """
 
-    def __init__(self, students, tutors, student_pref_file, noise_k=5):
+    def __init__(self, students, tutors, oracle_student_pref=None, student_pref_file=None, noise_k=5):
         self.students = students
         self.tutors = tutors
 
-        oracle_student_pref = pickle.load(open(student_pref_file, "rb"))
+        if oracle_student_pref is None:
+            assert student_pref_file is not None
+            oracle_student_pref = pickle.load(open(student_pref_file, "rb"))
+
         self._get_preferences(oracle_student_pref, noise_k)
 
         self.matches = Matches()
@@ -24,11 +27,11 @@ class GreedyMatching:
             ranking_list = get_permutation(
                 oracle_student_pref[student.id], noise_k
             )
-            student.set_init_rankings(ranking_list)
+            student.set_initial_rankings(ranking_list)
 
     def match(self):
         for student in self.students:
-            for tutor_id in student.ranking_list:
+            for tutor_id in student.init_ranking_list:
                 tutor = self.tutors[tutor_id]
                 if tutor.has_slots():
                     student.current_match = tutor_id

@@ -31,8 +31,8 @@ class Student(Participant):
     for students in the matching market
     """
 
-    def __init__(self, id, embedding, ranking_list=[]):
-        super().__init__(id, embedding, ranking_list)
+    def __init__(self, id, embedding):
+        super().__init__(id, embedding)
         self.current_match = None
 
     def is_matched(self):
@@ -45,8 +45,8 @@ class Tutor(Participant):
     for tutors in the matching market 
     """
 
-    def __init__(self, id, embedding, num_slots, ranking_list=[]):
-        super().__init__(id, embedding, ranking_list)
+    def __init__(self, id, embedding, num_slots):
+        super().__init__(id, embedding)
         self.num_slots = num_slots
         self.current_matches = []
 
