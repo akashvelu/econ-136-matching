@@ -1,3 +1,5 @@
+import numpy as np
+
 class Participant:
     """
     Class that defines useful attributes and methods for
@@ -56,3 +58,33 @@ class Tutor(Participant):
 
     def has_slots(self):
         return len(self.current_matches) < self.num_slots
+
+    def process_proposal(self, student_id):
+        # If the tutor has available slots, the student proposal can be accepted.
+        if self.has_slots():
+            self.current_matches.append(student_id)
+            return True, None
+
+        # If all slots are full, see if the proposing student is preferred over any existing match.
+        # If so, replace the worst existing match with the proposing student.
+        student_pref = np.where(self.init_ranking_list == student_id)[0][0]
+
+        # Find the least-preferred student among current matches
+        worst_match = -1
+        worst_match_idx = None
+        for i in range(len(self.current_matches)):
+            match = self.current_matches[i]
+            match_ind = np.where(self.init_ranking_list == match)[0][0]
+            # a match is worse if the student appears later in the preference list.
+            if match_ind > worst_match:
+                worst_match = match_ind
+                worst_match_idx = i
+
+        # Check if the proposing student is preferred over the worst match; if so, replace the worst match with this student.
+        if student_pref < worst_match:
+            replaced_student_id = self.current_ranking_list[worst_match_idx]
+            self.current_matches[worst_match_idx] = student_id
+            return True, replaced_student_id
+        else:
+            return False, None
+

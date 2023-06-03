@@ -1,6 +1,7 @@
 import argparse
 
 from matching.greedy import GreedyMatching
+from matching.deferred_acceptance import DAAMatching
 from utils import generate_embeddings, get_cosine_similarities, get_oracle_pref
 from matching.participants import Student, Tutor
 import numpy as np
@@ -16,7 +17,7 @@ def parse_args():
         "--matching-algo",
         "-ma",
         type=str,
-        default="greedy",
+        default="da",
         choices=["greedy", "da"],
     )
     parser.add_argument(
@@ -47,7 +48,7 @@ def parse_args():
     return args
 
 
-def run_greedy_matching(args, load_data_path=None, save_data=False):
+def run_matching(args, load_data_path=None, save_data=False):
     """
     Run greedy matching based on the setting specified in args.
     If save_data is True, save embeddings, similarity matrix, preferences, and the final match.
@@ -80,24 +81,37 @@ def run_greedy_matching(args, load_data_path=None, save_data=False):
         for i in range(num_tutors)
     ]
 
-    # Initialize matching algorithm
-    greedy_matching = GreedyMatching(
-        students,
-        tutors,
-        oracle_student_pref=oracle_student_prefs,
-        noise_k=noise_k,
-    )
+
 
     # Student ranking list for storing
     student_prefs = np.stack([s.init_ranking_list for s in students])
 
-    # Run matching algo
-    greedy_match = greedy_matching.match()
+    # Initialize matching algorithmR, and run matching algo
+    if args.matching_algo == "greedy":
+        matching = GreedyMatching(
+            students,
+            tutors,
+            oracle_student_pref=oracle_student_prefs,
+            noise_k=noise_k,
+        )
+    elif args.matching_algo == "da":
+        matching = DAAMatching(
+            students,
+            tutors,
+            oracle_student_pref=oracle_student_prefs,
+            oracle_tutor_pref=oracle_tutor_prefs,
+            noise_k=noise_k
+        )
+    else:
+        raise NotImplementedError
+    match = matching.match()
+
 
     if save_data:
         # save embeddings, sim_mat, oracle_prefs, perturbed prefs, and the match
         exp_dir = (
-            "greedy_ns_"
+            args.matching_algo
+            + "_ns_"
             + str(num_students)
             + "_nt_"
             + str(num_tutors)
@@ -126,15 +140,15 @@ def run_greedy_matching(args, load_data_path=None, save_data=False):
         with open(data_dir + "/sim_mat.npy", "wb") as f:
             np.save(f, sim_mat)
         with open(data_dir + "/match.pkl", "wb") as f:
-            pickle.dump(greedy_match.matches, f)
+            pickle.dump(match.matches, f)
         with open(data_dir + "/args.pkl", "wb") as f:
             pickle.dump(vars(args), f)
 
-    return greedy_match
+    return match
 
 
 def main(args):
-    match = run_greedy_matching(args, save_data=True)
+    match = run_matching(args, save_data=True)
 
 
 if __name__ == "__main__":
