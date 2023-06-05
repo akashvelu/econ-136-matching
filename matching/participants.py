@@ -1,16 +1,21 @@
 import numpy as np
 
+
 class Participant:
     """
     Class that defines useful attributes and methods for
     students and tutors in the matching market
     """
 
-    def __init__(self, id, embedding):
+    def __init__(self, id, embedding, oracle_ranking_list):
         self.id = id
         self.embedding = embedding
+        self.oracle_ranking_list = oracle_ranking_list
+        # These are potentially noisy versions
         self.init_ranking_list = None
-        self.current_ranking_list = None
+        self.current_ranking_list = (
+            None  # ranking list that will get modified during DAA
+        )
 
     def set_initial_rankings(self, ranking_list):
         assert self.init_ranking_list is None
@@ -25,6 +30,12 @@ class Participant:
 
     def top(self):
         return self.current_ranking_list[0]
+
+    def get_rank(self, partner_idx):
+        return self.oracle_ranking_list.index(partner_idx)
+
+    def get_noisy_rank(self, partner_idx):
+        return self.init_ranking_list.index(partner_idx)
 
 
 class Student(Participant):
@@ -44,11 +55,11 @@ class Student(Participant):
 class Tutor(Participant):
     """
     Class that defines useful attributes and methods
-    for tutors in the matching market 
+    for tutors in the matching market
     """
 
-    def __init__(self, id, embedding, num_slots):
-        super().__init__(id, embedding)
+    def __init__(self, id, embedding, oracle_ranking_list, num_slots):
+        super().__init__(id, embedding, oracle_ranking_list)
         self.num_slots = num_slots
         self.current_matches = []
 
@@ -87,4 +98,3 @@ class Tutor(Participant):
             return True, replaced_student_id
         else:
             return False, None
-

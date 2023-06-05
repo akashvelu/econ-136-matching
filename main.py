@@ -21,10 +21,16 @@ def parse_args():
         choices=["greedy", "da"],
     )
     parser.add_argument(
-        "--num-students", "-ns", type=int, default=100,
+        "--num-students",
+        "-ns",
+        type=int,
+        default=100,
     )
     parser.add_argument(
-        "--num-tutors", "-nt", type=int, default=100,
+        "--num-tutors",
+        "-nt",
+        type=int,
+        default=100,
     )
     parser.add_argument(
         "--num-tutor-slots",
@@ -34,10 +40,16 @@ def parse_args():
         help="By default tutor slots are sampled unfiormly from 1 to nts, both included",
     )
     parser.add_argument(
-        "--dim", "-d", type=int, default=100,
+        "--dim",
+        "-d",
+        type=int,
+        default=100,
     )
     parser.add_argument(
-        "--noise-k", "-nk", type=int, default=5,
+        "--noise-k",
+        "-nk",
+        type=int,
+        default=5,
     )
     parser.add_argument(
         "--seed", type=int, default=1234, help="Pass 0 for no seed"
@@ -73,18 +85,21 @@ def run_matching(args, load_data_path=None, save_data=False):
     oracle_student_prefs = get_oracle_pref(sim_mat)
     oracle_tutor_prefs = get_oracle_pref(sim_mat.T)
 
-    students = [Student(i, student_embeds[i]) for i in range(num_students)]
+    students = [
+        Student(i, student_embeds[i], oracle_student_prefs[i])
+        for i in range(num_students)
+    ]
 
     # Sample tutor slots uniform random. This mimics real life better
     tutors = [
-        Tutor(i, tutor_embeds[i], np.random.uniform(1, num_tutor_slots + 1))
+        Tutor(
+            i,
+            tutor_embeds[i],
+            oracle_tutor_prefs[i],
+            np.random.uniform(1, num_tutor_slots + 1),
+        )
         for i in range(num_tutors)
     ]
-
-
-
-    # Student ranking list for storing
-    student_prefs = np.stack([s.init_ranking_list for s in students])
 
     # Initialize matching algorithmR, and run matching algo
     if args.matching_algo == "greedy":
@@ -100,12 +115,17 @@ def run_matching(args, load_data_path=None, save_data=False):
             tutors,
             oracle_student_pref=oracle_student_prefs,
             oracle_tutor_pref=oracle_tutor_prefs,
-            noise_k=noise_k
+            noise_k=noise_k,
         )
     else:
         raise NotImplementedError
-    match = matching.match()
 
+    # Student ranking list for storing
+    student_prefs = np.stack([s.init_ranking_list for s in students])
+
+    # For our experiments, we assume tutor rankings are the oracle rankings for simplicity
+
+    match = matching.match()
 
     if save_data:
         # save embeddings, sim_mat, oracle_prefs, perturbed prefs, and the match

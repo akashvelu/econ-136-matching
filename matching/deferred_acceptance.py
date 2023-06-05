@@ -6,13 +6,20 @@ from matching.matches import Matches
 
 class DAAMatching:
     """
-    Class to perform Greedy Matching and related utility
+    Class to perform Deferred Acceptance Matching and related utility
     methods.
     """
 
-    def __init__(self, students, tutors, oracle_student_pref=None, oracle_tutor_pref=None,
-                 student_pref_file=None, tutor_pref_file=None, noise_k=5):
-
+    def __init__(
+        self,
+        students,
+        tutors,
+        oracle_student_pref=None,
+        oracle_tutor_pref=None,
+        student_pref_file=None,
+        tutor_pref_file=None,
+        noise_k=5,
+    ):
         self.students = students
         self.tutors = tutors
 
@@ -26,18 +33,18 @@ class DAAMatching:
 
         self._get_preferences(oracle_student_pref, noise_k, oracle_tutor_pref)
 
-        self.matches = Matches()
+        self.matches = Matches(students, tutors)
 
     def _get_preferences(self, oracle_student_pref, noise_k, oracle_tutor_pref):
         for student in self.students:
             ranking_list = get_permutation(
                 oracle_student_pref[student.id], noise_k
             )
-            student.set_initial_rankings(ranking_list)
+            student.set_noisy_rankings(ranking_list)
 
         for tutor in self.tutors:
             # No perturbations to tutor preferences (for now).
-            tutor.set_initial_rankings(oracle_tutor_pref[tutor.id])
+            tutor.set_noisy_rankings(oracle_tutor_pref[tutor.id])
 
     def match(self):
         # Run deferred acceptance.
@@ -50,7 +57,10 @@ class DAAMatching:
                 most_preferred_tutor_id = student.pop()
                 most_preferred_tutor = self.tutors[most_preferred_tutor_id]
                 # This function will already add student to the tutor matches, if accepted.
-                accepted, replaced_student_id = most_preferred_tutor.process_proposal(student.id)
+                (
+                    accepted,
+                    replaced_student_id,
+                ) = most_preferred_tutor.process_proposal(student.id)
                 if accepted:
                     student.current_match = most_preferred_tutor_id
                 else:

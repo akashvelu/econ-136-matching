@@ -10,7 +10,14 @@ class GreedyMatching:
     methods.
     """
 
-    def __init__(self, students, tutors, oracle_student_pref=None, student_pref_file=None, noise_k=5):
+    def __init__(
+        self,
+        students,
+        tutors,
+        oracle_student_pref=None,
+        student_pref_file=None,
+        noise_k=5,
+    ):
         self.students = students
         self.tutors = tutors
 
@@ -20,14 +27,14 @@ class GreedyMatching:
 
         self._get_preferences(oracle_student_pref, noise_k)
 
-        self.matches = Matches()
+        self.matches = Matches(students, tutors)
 
     def _get_preferences(self, oracle_student_pref, noise_k):
         for student in self.students:
             ranking_list = get_permutation(
                 oracle_student_pref[student.id], noise_k
             )
-            student.set_initial_rankings(ranking_list)
+            student.set_noisy_rankings(ranking_list)
 
     def match(self):
         for student in self.students:
