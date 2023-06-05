@@ -2,6 +2,7 @@ import argparse
 
 from matching.greedy import GreedyMatching
 from matching.deferred_acceptance import DAAMatching
+from matching.sampler import SamplerMatching
 from utils import generate_embeddings, get_cosine_similarities, get_oracle_pref
 from matching.participants import Student, Tutor
 import numpy as np
@@ -18,7 +19,7 @@ def parse_args():
         "-ma",
         type=str,
         default="da",
-        choices=["greedy", "da"],
+        choices=["greedy", "da", "sampler"],
     )
     parser.add_argument(
         "--num-students",
@@ -52,6 +53,11 @@ def parse_args():
         default=5,
     )
     parser.add_argument(
+        "--num-samples",
+        type=int,
+        default=5,
+    )
+    parser.add_argument(
         "--seed", type=int, default=1234, help="Pass 0 for no seed"
     )
 
@@ -76,6 +82,7 @@ def run_matching(args, load_data_path=None, save_data=False):
     num_tutor_slots = args.num_tutor_slots
     embed_dim = args.dim
     noise_k = args.noise_k
+    num_samples = args.num_samples
 
     student_embeds = generate_embeddings(num_students, embed_dim, store=False)
     tutor_embeds = generate_embeddings(num_tutors, embed_dim, store=False)
@@ -115,6 +122,14 @@ def run_matching(args, load_data_path=None, save_data=False):
             tutors,
             oracle_student_pref=oracle_student_prefs,
             oracle_tutor_pref=oracle_tutor_prefs,
+            noise_k=noise_k,
+        )
+    elif args.matching_algo == "sampler":
+        matching = SamplerMatching(
+            students,
+            tutors,
+            num_samples=num_samples,
+            oracle_student_pref=oracle_student_prefs,
             noise_k=noise_k,
         )
     else:
@@ -169,6 +184,10 @@ def run_matching(args, load_data_path=None, save_data=False):
 
 def main(args):
     match = run_matching(args, save_data=True)
+    blocking_pairs = match.get_blocking_pairs()
+    print(
+        f"Matching completed! The match has {len(blocking_pairs)} blocking pairs."
+    )
 
 
 if __name__ == "__main__":
