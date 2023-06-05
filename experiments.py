@@ -35,9 +35,9 @@ def plot(results, nts, title_sub):
     plt.ylabel("Number of blocking pairs")
     plt.title(f"Number of blocking pairs vs growing {title_sub} (NTS={nts})")
     if title_sub == "matching pool":
-        plt.savefig(f"MP_bp_nts={nts}.png")
+        plt.savefig(f"plots/MP_bp_nts={nts}.png")
     if title_sub == "student/tutor ratio":
-        plt.savefig(f"STR_bp_nts={nts}.png")
+        plt.savefig(f"plots/STR_bp_nts={nts}.png")
     plt.clf()
 
     # Mean TL plot
@@ -62,9 +62,9 @@ def plot(results, nts, title_sub):
     plt.ylabel("Mean Tutor Load")
     plt.title(f"Mean Tutor Load vs growing matching pool (NTS={nts})")
     if title_sub == "matching pool":
-        plt.savefig(f"MP_mean_tl_nts={nts}.png")
+        plt.savefig(f"plots/MP_mean_tl_nts={nts}.png")
     if title_sub == "student/tutor ratio":
-        plt.savefig(f"STR_mean_tl_nts={nts}.png")
+        plt.savefig(f"plots/STR_mean_tl_nts={nts}.png")
     plt.clf()
 
     # Max TL plot
@@ -89,9 +89,9 @@ def plot(results, nts, title_sub):
     plt.ylabel("Max Tutor Load")
     plt.title(f"Max Tutor Load vs growing matching pool (NTS={nts})")
     if title_sub == "matching pool":
-        plt.savefig(f"MP_max_tl_nts={nts}.png")
+        plt.savefig(f"plots/MP_max_tl_nts={nts}.png")
     if title_sub == "student/tutor ratio":
-        plt.savefig(f"STR_max_tl_nts={nts}.png")
+        plt.savefig(f"plots/STR_max_tl_nts={nts}.png")
     plt.clf()
 
 
@@ -248,7 +248,7 @@ def run_matching_pool_exp():
         run_seeds(ns_list, nt_list, nts, title_sub, seeds, dim)
 
 
-def run_ratio_exp():
+def run_ratios_exp():
     ns_list = [50, 50, 50, 50]
     nt_list = [100, 50, 40, 20]
     seeds = [1, 2, 3]

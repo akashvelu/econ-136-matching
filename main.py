@@ -9,7 +9,7 @@ from matching.deferred_acceptance import DAAMatching
 from matching.sampler import SamplerMatching
 from utils import generate_embeddings, get_cosine_similarities, get_oracle_pref
 from matching.participants import Student, Tutor
-from experiments import run_matching_pool_exp
+from experiments import run_matching_pool_exp, run_ratios_exp
 
 
 def parse_args():
@@ -17,6 +17,7 @@ def parse_args():
 
     parser = argparse.ArgumentParser()
     parser.add_argument("--run-matching-pool-exp", "-rmpe", action="store_true")
+    parser.add_argument("--run-ratios-exp", "-rre", action="store_true")
     parser.add_argument(
         "--matching-algo",
         "-ma",
@@ -190,6 +191,9 @@ def run_matching(args, load_data_path=None, save_data=False):
 def main(args):
     if args.run_matching_pool_experiment:
         run_matching_pool_exp()
+    if args.run_ratios_experiment:
+        run_ratios_exp()
+    return
 
     match = run_matching(args, save_data=False)
     blocking_pairs = match.get_blocking_pairs()
