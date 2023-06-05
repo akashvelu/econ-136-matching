@@ -17,7 +17,7 @@ class Participant:
             None  # ranking list that will get modified during DAA
         )
 
-    def set_initial_rankings(self, ranking_list):
+    def set_noisy_rankings(self, ranking_list):
         assert self.init_ranking_list is None
         assert self.current_ranking_list is None
         self.init_ranking_list = ranking_list
@@ -31,11 +31,11 @@ class Participant:
     def top(self):
         return self.current_ranking_list[0]
 
-    def get_rank(self, partner_idx):
-        return self.oracle_ranking_list.index(partner_idx)
+    def get_oracle_rank(self, partner_idx):
+        return np.where(self.oracle_ranking_list == partner_idx)[0][0]
 
     def get_noisy_rank(self, partner_idx):
-        return self.init_ranking_list.index(partner_idx)
+        return np.where(self.init_ranking_list == partner_idx)[0][0]
 
 
 class Student(Participant):
@@ -44,8 +44,8 @@ class Student(Participant):
     for students in the matching market
     """
 
-    def __init__(self, id, embedding):
-        super().__init__(id, embedding)
+    def __init__(self, id, embedding, oracle_ranking_list):
+        super().__init__(id, embedding, oracle_ranking_list)
         self.current_match = None
 
     def is_matched(self):
@@ -78,14 +78,14 @@ class Tutor(Participant):
 
         # If all slots are full, see if the proposing student is preferred over any existing match.
         # If so, replace the worst existing match with the proposing student.
-        student_pref = np.where(self.init_ranking_list == student_id)[0][0]
+        student_pref = self.get_noisy_rank(student_id)
 
         # Find the least-preferred student among current matches
         worst_match = -1
         worst_match_idx = None
         for i in range(len(self.current_matches)):
             match = self.current_matches[i]
-            match_ind = np.where(self.init_ranking_list == match)[0][0]
+            match_ind = self.get_noisy_rank(match)
             # a match is worse if the student appears later in the preference list.
             if match_ind > worst_match:
                 worst_match = match_ind

@@ -5,7 +5,7 @@ from numpy.linalg import norm
 
 def generate_embeddings(N, D, dist="std", store=True):
     """
-    Generates embeddings of dimension N x D from the 
+    Generates embeddings of dimension N x D from the
     specified distribution
     """
     if dist == "std":
@@ -72,5 +72,4 @@ def get_permutation(v, k):
     the first k indices. The remaining indices are kept intact
     """
     x = np.random.permutation(v[:k])
-    return np.concatenate([x, v[k + 1 :]])
-
+    return np.concatenate([x, v[k:]])

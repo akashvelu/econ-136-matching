@@ -69,19 +69,20 @@ class SamplerMatching:
             # still have an open slot.
             tutor_showcase = []
             for tutor_id in student.init_ranking_list:
-                tutor = self.tutors[tutor_id]
-                if tutor.has_slots():
+                if self.tutors[tutor_id].has_slots():
                     tutor_showcase.append(tutor_id)
+                if len(tutor_showcase) == self.num_samples:
+                    break
+
+            print(student.id, tutor_showcase)
 
             # Sample a tutor from this list with weights
             tutor_sample = np.random.choice(
                 a=tutor_showcase, p=self.sample_weights[: len(tutor_showcase)]
             )
-
             # Assign the match
             student.current_match = tutor_sample
             self.tutors[tutor_sample].current_matches.append(student.id)
             self.matches.add_match(student.id, tutor_sample)
-            break
 
         return self.matches

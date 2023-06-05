@@ -1,19 +1,22 @@
 import argparse
+import numpy as np
+import os
+import pickle
+
 
 from matching.greedy import GreedyMatching
 from matching.deferred_acceptance import DAAMatching
 from matching.sampler import SamplerMatching
 from utils import generate_embeddings, get_cosine_similarities, get_oracle_pref
 from matching.participants import Student, Tutor
-import numpy as np
-import os
-import pickle
+from experiments import run_matching_pool_exp
 
 
 def parse_args():
     # TODO: can add even more arguments for ablation
 
     parser = argparse.ArgumentParser()
+    parser.add_argument("--run-matching-pool-exp", "-rmpe", action="store_true")
     parser.add_argument(
         "--matching-algo",
         "-ma",
@@ -38,7 +41,7 @@ def parse_args():
         "-nts",
         type=int,
         default=1,
-        help="By default tutor slots are sampled unfiormly from 1 to nts, both included",
+        help="By default tutor slots are sampled uniformly from 1 to nts, both included",
     )
     parser.add_argument(
         "--dim",
@@ -51,14 +54,16 @@ def parse_args():
         "-nk",
         type=int,
         default=5,
+        help="Used to create noisy permutations from oracle preferences to mimic an artificial ranking system",
     )
     parser.add_argument(
         "--num-samples",
         type=int,
         default=5,
+        help="Used in SamplerMatching to sample from a showcase of tutors",
     )
     parser.add_argument(
-        "--seed", type=int, default=1234, help="Pass 0 for no seed"
+        "--seed", type=int, default=0, help="Pass 0 for no seed"
     )
 
     args = parser.parse_args()
@@ -75,6 +80,7 @@ def run_matching(args, load_data_path=None, save_data=False):
     # Set seed
     seed = args.seed
     if seed:
+        print(f"Setting seed: {seed}")
         np.random.seed(seed)
 
     num_students = args.num_students
@@ -136,9 +142,8 @@ def run_matching(args, load_data_path=None, save_data=False):
         raise NotImplementedError
 
     # Student ranking list for storing
-    student_prefs = np.stack([s.init_ranking_list for s in students])
-
     # For our experiments, we assume tutor rankings are the oracle rankings for simplicity
+    student_prefs = np.stack([s.init_ranking_list for s in students])
 
     match = matching.match()
 
@@ -183,11 +188,22 @@ def run_matching(args, load_data_path=None, save_data=False):
 
 
 def main(args):
-    match = run_matching(args, save_data=True)
+    if args.run_matching_pool_experiment:
+        run_matching_pool_exp()
+
+    match = run_matching(args, save_data=False)
     blocking_pairs = match.get_blocking_pairs()
+    # for student in match.students:
+    #     print(student.oracle_ranking_list, student.init_ranking_list)
+    # print("+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++")
+    # print(match.matches)
+    print("+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++")
     print(
         f"Matching completed! The match has {len(blocking_pairs)} blocking pairs."
     )
+    print("+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++")
+    print(f"Tutor load stats: {match.get_tutor_load_stats()}")
+    print("+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++")
 
 
 if __name__ == "__main__":

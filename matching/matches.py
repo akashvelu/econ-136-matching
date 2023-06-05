@@ -1,4 +1,5 @@
 import pickle
+import numpy as np
 
 
 class Matches:
@@ -19,12 +20,14 @@ class Matches:
         for student in self.students:
             for tutor in self.tutors:
                 # if there is a tutor the student prefers more to their current match
-                if student.get_rank(tutor.id) < student.get_rank(
+                if student.get_oracle_rank(tutor.id) < student.get_oracle_rank(
                     student.current_match
                 ):
                     # check if the tutor prefers this student more to any of their current matches
                     for match in tutor.current_matches:
-                        if tutor.get_rank(student.id) < tutor.get_rank(match):
+                        if tutor.get_oracle_rank(
+                            student.id
+                        ) < tutor.get_oracle_rank(match):
                             # if yes, we have a blocking pair
                             blocking_pairs.append((student.id, tutor.id))
 
@@ -34,16 +37,22 @@ class Matches:
         self.matches[student_id] = tutor_id
 
     def get_tutor(self, student_idx):
-        return self.matches[student_idx]
+        return self.students[student_idx].current_match
 
     def get_students(self, tutor_index):
-        s = []
+        return self.tutors[tutor_index].current_matches
 
-        for k, v in self.matches.items():
-            if v == tutor_index:
-                s.append(k)
-
-        return s
+    def get_tutor_load_stats(self):
+        loads = []
+        for tutor in self.tutors:
+            loads.append(len(tutor.current_matches))
+        return {
+            "mean": np.mean(loads),
+            "std": np.std(loads),
+            "median": np.median(loads),
+            "min": min(loads),
+            "max": max(loads),
+        }
 
     @property
     def num_matched_students(self):
