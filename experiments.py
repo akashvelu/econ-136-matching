@@ -51,7 +51,7 @@ def plot(results, nts, title_sub):
         plt.savefig(f"plots/STR_bp_nts={nts}.png")
     plt.clf()
 
-    # Mean TL plot
+    # Median TL plot
     greedy_data = defaultdict(list)
     sampler_data = defaultdict(list)
     da_data = defaultdict(list)
@@ -77,13 +77,13 @@ def plot(results, nts, title_sub):
     )
     plt.errorbar(plot_x, da_y, yerr=da_err, label="DA", fmt="-o")
     plt.xlabel("(Num Students, Num Tutors)")
-    plt.ylabel("Mean Tutor Load")
-    plt.title(f"Mean Tutor Load vs growing matching pool (NTS={nts})")
+    plt.ylabel("Median Tutor Load")
+    plt.title(f"Median Tutor Load vs growing matching pool (NTS={nts})")
     plt.legend()
     if title_sub == "matching pool":
-        plt.savefig(f"plots/MP_mean_tl_nts={nts}.png")
+        plt.savefig(f"plots/MP_median_tl_nts={nts}.png")
     if title_sub == "student/tutor ratio":
-        plt.savefig(f"plots/STR_mean_tl_nts={nts}.png")
+        plt.savefig(f"plots/STR_median_tl_nts={nts}.png")
     plt.clf()
 
     # Max TL plot
@@ -177,7 +177,7 @@ def init_matching(ns, nt, nts, dim):
             i,
             tutor_embeds[i],
             oracle_tutor_prefs[i],
-            np.random.uniform(1, nts + 1),
+            np.random.randint(1, nts + 1),
         )
         for i in range(nt)
     ]
@@ -224,7 +224,7 @@ def run_matcher(
     tutor_load_stats = matches.get_tutor_load_stats()
     return (
         len(blocking_pairs),
-        tutor_load_stats["mean"],
+        tutor_load_stats["median"],
         tutor_load_stats["max"],
         tutor_load_stats["std"],
     )
@@ -334,7 +334,7 @@ def run_matching_pool_exp():
 
 def run_ratios_exp():
     ns_list = [50, 50, 50, 50]
-    nt_list = [100, 50, 40, 20]
+    nt_list = [100, 50, 40, 30]
     seeds = [1, 2, 3]
     nts_list = [3, 5]
     dim = 100

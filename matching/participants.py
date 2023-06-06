@@ -103,7 +103,7 @@ class Tutor(Participant):
 
         # Check if the proposing student is preferred over the worst match; if so, replace the worst match with this student.
         if student_pref < worst_match:
-            replaced_student_id = self.current_ranking_list[worst_match_idx]
+            replaced_student_id = self.current_matches[worst_match_idx]
             self.current_matches[worst_match_idx] = student_id
             return True, replaced_student_id
         else:

@@ -110,7 +110,7 @@ def run_matching(args, load_data_path=None, save_data=False):
             i,
             tutor_embeds[i],
             oracle_tutor_prefs[i],
-            np.random.uniform(1, num_tutor_slots + 1),
+            np.random.randint(1, num_tutor_slots + 1),
         )
         for i in range(num_tutors)
     ]
@@ -197,10 +197,10 @@ def main(args):
 
     match = run_matching(args, save_data=False)
     blocking_pairs = match.get_blocking_pairs()
-    # for student in match.students:
-    #     print(student.oracle_ranking_list, student.init_ranking_list)
-    # print("+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++")
-    # print(match.matches)
+    for student in match.students:
+        print(student.init_ranking_list)
+    print("+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++")
+    print(match.matches)
     print("+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++")
     print(
         f"Matching completed! The match has {len(blocking_pairs)} blocking pairs."
@@ -208,6 +208,8 @@ def main(args):
     print("+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++")
     print(f"Tutor load stats: {match.get_tutor_load_stats()}")
     print("+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++")
+    for tutor in match.tutors:
+        print(tutor.current_matches, tutor.num_slots)
 
 
 if __name__ == "__main__":
