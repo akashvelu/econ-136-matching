@@ -189,9 +189,9 @@ def run_matching(args, load_data_path=None, save_data=False):
 
 
 def main(args):
-    if args.run_matching_pool_experiment:
+    if args.run_matching_pool_exp:
         run_matching_pool_exp()
-    if args.run_ratios_experiment:
+    if args.run_ratios_exp:
         run_ratios_exp()
     return
 

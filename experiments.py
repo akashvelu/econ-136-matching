@@ -13,27 +13,38 @@ from matching.deferred_acceptance import DAAMatching
 
 def plot(results, nts, title_sub):
     x = list(results[0][0]["greedy"].keys())
+    # Convert the tuple to string so we can plot it
+    plot_x = [str(i) for i in x]
+
     # BP plot
     greedy_data = defaultdict(list)
     sampler_data = defaultdict(list)
     da_data = defaultdict(list)
+
     for result in results:
         for key in x:
             greedy_data[key].append(result[0]["greedy"][key])
             sampler_data[key].append(result[0]["sampler"][key])
             da_data[key].append(result[0]["da"][key])
+
     greedy_y = [np.mean(greedy_data[key]) for key in x]
     greedy_err = [np.std(greedy_data[key]) for key in x]
+
     sampler_y = [np.mean(sampler_data[key]) for key in x]
     sampler_err = [np.std(sampler_data[key]) for key in x]
+
     da_y = [np.mean(da_data[key]) for key in x]
     da_err = [np.std(da_data[key]) for key in x]
-    plt.errorbar(x, greedy_y, yerr=greedy_err, label="Greedy")
-    plt.errorbar(x, sampler_y, yerr=sampler_err, label="Sampler(5)")
-    plt.errorbar(x, da_y, yerr=da_err, label="DA")
+
+    plt.errorbar(plot_x, greedy_y, yerr=greedy_err, label="Greedy", fmt="-o")
+    plt.errorbar(
+        plot_x, sampler_y, yerr=sampler_err, label="Sampler(5)", fmt="-o"
+    )
+    plt.errorbar(plot_x, da_y, yerr=da_err, label="DA", fmt="-o")
     plt.xlabel("(Num Students, Num Tutors)")
     plt.ylabel("Number of blocking pairs")
     plt.title(f"Number of blocking pairs vs growing {title_sub} (NTS={nts})")
+    plt.legend()
     if title_sub == "matching pool":
         plt.savefig(f"plots/MP_bp_nts={nts}.png")
     if title_sub == "student/tutor ratio":
@@ -44,23 +55,31 @@ def plot(results, nts, title_sub):
     greedy_data = defaultdict(list)
     sampler_data = defaultdict(list)
     da_data = defaultdict(list)
+
     for result in results:
         for key in x:
             greedy_data[key].append(result[1]["greedy"][key])
             sampler_data[key].append(result[1]["sampler"][key])
             da_data[key].append(result[1]["da"][key])
+
     greedy_y = [np.mean(greedy_data[key]) for key in x]
     greedy_err = [np.std(greedy_data[key]) for key in x]
+
     sampler_y = [np.mean(sampler_data[key]) for key in x]
     sampler_err = [np.std(sampler_data[key]) for key in x]
+
     da_y = [np.mean(da_data[key]) for key in x]
     da_err = [np.std(da_data[key]) for key in x]
-    plt.errorbar(x, greedy_y, yerr=greedy_err, label="Greedy")
-    plt.errorbar(x, sampler_y, yerr=sampler_err, label="Sampler(5)")
-    plt.errorbar(x, da_y, yerr=da_err, label="DA")
+
+    plt.errorbar(plot_x, greedy_y, yerr=greedy_err, label="Greedy", fmt="-o")
+    plt.errorbar(
+        plot_x, sampler_y, yerr=sampler_err, label="Sampler(5)", fmt="-o"
+    )
+    plt.errorbar(plot_x, da_y, yerr=da_err, label="DA", fmt="-o")
     plt.xlabel("(Num Students, Num Tutors)")
     plt.ylabel("Mean Tutor Load")
     plt.title(f"Mean Tutor Load vs growing matching pool (NTS={nts})")
+    plt.legend()
     if title_sub == "matching pool":
         plt.savefig(f"plots/MP_mean_tl_nts={nts}.png")
     if title_sub == "student/tutor ratio":
@@ -76,22 +95,65 @@ def plot(results, nts, title_sub):
             greedy_data[key].append(result[2]["greedy"][key])
             sampler_data[key].append(result[2]["sampler"][key])
             da_data[key].append(result[2]["da"][key])
+
     greedy_y = [np.mean(greedy_data[key]) for key in x]
     greedy_err = [np.std(greedy_data[key]) for key in x]
+
     sampler_y = [np.mean(sampler_data[key]) for key in x]
     sampler_err = [np.std(sampler_data[key]) for key in x]
+
     da_y = [np.mean(da_data[key]) for key in x]
     da_err = [np.std(da_data[key]) for key in x]
-    plt.errorbar(x, greedy_y, yerr=greedy_err, label="Greedy")
-    plt.errorbar(x, sampler_y, yerr=sampler_err, label="Sampler(5)")
-    plt.errorbar(x, da_y, yerr=da_err, label="DA")
+
+    plt.errorbar(plot_x, greedy_y, yerr=greedy_err, label="Greedy", fmt="-o")
+    plt.errorbar(
+        plot_x, sampler_y, yerr=sampler_err, label="Sampler(5)", fmt="-o"
+    )
+    plt.errorbar(plot_x, da_y, yerr=da_err, label="DA", fmt="-o")
     plt.xlabel("(Num Students, Num Tutors)")
     plt.ylabel("Max Tutor Load")
     plt.title(f"Max Tutor Load vs growing matching pool (NTS={nts})")
+    plt.legend()
     if title_sub == "matching pool":
         plt.savefig(f"plots/MP_max_tl_nts={nts}.png")
     if title_sub == "student/tutor ratio":
         plt.savefig(f"plots/STR_max_tl_nts={nts}.png")
+    plt.clf()
+
+    # Std TL plot
+    greedy_data = defaultdict(list)
+    sampler_data = defaultdict(list)
+    da_data = defaultdict(list)
+    for result in results:
+        for key in x:
+            greedy_data[key].append(result[3]["greedy"][key])
+            sampler_data[key].append(result[3]["sampler"][key])
+            da_data[key].append(result[3]["da"][key])
+
+    greedy_y = [np.mean(greedy_data[key]) for key in x]
+    greedy_err = [np.std(greedy_data[key]) for key in x]
+
+    sampler_y = [np.mean(sampler_data[key]) for key in x]
+    sampler_err = [np.std(sampler_data[key]) for key in x]
+
+    da_y = [np.mean(da_data[key]) for key in x]
+    da_err = [np.std(da_data[key]) for key in x]
+
+    plt.errorbar(plot_x, greedy_y, yerr=greedy_err, label="Greedy", fmt="-o")
+    plt.errorbar(
+        plot_x, sampler_y, yerr=sampler_err, label="Sampler(5)", fmt="-o"
+    )
+    plt.errorbar(plot_x, da_y, yerr=da_err, label="DA", fmt="-o")
+    plt.xlabel("(Num Students, Num Tutors)")
+    plt.ylabel("Standard Deviation of Tutor Load")
+    plt.title(
+        f"Standard Deviation of Tutor Load vs growing matching pool (NTS={nts})"
+    )
+    plt.legend()
+    if title_sub == "matching pool":
+        plt.savefig(f"plots/MP_std_tl_nts={nts}.png")
+    if title_sub == "student/tutor ratio":
+        plt.savefig(f"plots/STR_std_tl_nts={nts}.png")
     plt.clf()
 
 
@@ -155,6 +217,8 @@ def run_matcher(
             oracle_tutor_pref=oracle_tutor_prefs,
             noise_k=noise_k,
         )
+    else:
+        raise NotImplementedError
     matches = matcher.match()
     blocking_pairs = matches.get_blocking_pairs()
     tutor_load_stats = matches.get_tutor_load_stats()
@@ -162,6 +226,7 @@ def run_matcher(
         len(blocking_pairs),
         tutor_load_stats["mean"],
         tutor_load_stats["max"],
+        tutor_load_stats["std"],
     )
 
 
@@ -169,6 +234,7 @@ def run_experiment(ns_list, nt_list, nts, dim=100):
     bp = {"greedy": {}, "sampler": {}, "da": {}}
     mean_tl = {"greedy": {}, "sampler": {}, "da": {}}
     max_tl = {"greedy": {}, "sampler": {}, "da": {}}
+    std_tl = {"greedy": {}, "sampler": {}, "da": {}}
     for ns, nt in zip(ns_list, nt_list):
         (
             students,
@@ -190,9 +256,15 @@ def run_experiment(ns_list, nt_list, nts, dim=100):
             num_samples,
             noise_k,
         )
-        bp["greedy"][(ns, nt)] = greedy_results["bp"]
-        mean_tl["greedy"][(ns, nt)] = greedy_results["mean_tl"]
-        max_tl["greedy"][(ns, nt)] = greedy_results["max_tl"]
+        bp["greedy"][(ns, nt)] = greedy_results[0]
+        mean_tl["greedy"][(ns, nt)] = greedy_results[1]
+        max_tl["greedy"][(ns, nt)] = greedy_results[2]
+        std_tl["greedy"][(ns, nt)] = greedy_results[3]
+
+        for student in students:
+            student.reset()
+        for tutor in tutors:
+            tutor.reset()
 
         sampler_results = run_matcher(
             "sampler",
@@ -203,9 +275,15 @@ def run_experiment(ns_list, nt_list, nts, dim=100):
             num_samples,
             noise_k,
         )
-        bp["sampler"][(ns, nt)] = sampler_results["bp"]
-        mean_tl["sampler"][(ns, nt)] = sampler_results["mean_tl"]
-        max_tl["sampler"][(ns, nt)] = sampler_results["max_tl"]
+        bp["sampler"][(ns, nt)] = sampler_results[0]
+        mean_tl["sampler"][(ns, nt)] = sampler_results[1]
+        max_tl["sampler"][(ns, nt)] = sampler_results[2]
+        std_tl["sampler"][(ns, nt)] = sampler_results[3]
+
+        for student in students:
+            student.reset()
+        for tutor in tutors:
+            tutor.reset()
 
         da_results = run_matcher(
             "da",
@@ -216,11 +294,17 @@ def run_experiment(ns_list, nt_list, nts, dim=100):
             num_samples,
             noise_k,
         )
-        bp["da"][(ns, nt)] = da_results["bp"]
-        mean_tl["da"][(ns, nt)] = da_results["mean_tl"]
-        max_tl["da"][(ns, nt)] = da_results["max_tl"]
+        bp["da"][(ns, nt)] = da_results[0]
+        mean_tl["da"][(ns, nt)] = da_results[1]
+        max_tl["da"][(ns, nt)] = da_results[2]
+        std_tl["da"][(ns, nt)] = da_results[3]
 
-    return bp, mean_tl, max_tl
+        for student in students:
+            student.reset()
+        for tutor in tutors:
+            tutor.reset()
+
+    return bp, mean_tl, max_tl, std_tl
 
 
 def run_seeds(ns_list, nt_list, nts, title_sub, seeds=[1, 2, 3], dim=100):

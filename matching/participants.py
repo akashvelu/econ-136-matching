@@ -51,6 +51,11 @@ class Student(Participant):
     def is_matched(self):
         return not (self.current_match is None)
 
+    def reset(self):
+        self.init_ranking_list = None
+        self.current_ranking_list = None
+        self.current_match = None
+
 
 class Tutor(Participant):
     """
@@ -69,6 +74,11 @@ class Tutor(Participant):
 
     def has_slots(self):
         return len(self.current_matches) < self.num_slots
+
+    def reset(self):
+        self.init_ranking_list = None
+        self.current_ranking_list = None
+        self.current_matches = []
 
     def process_proposal(self, student_id):
         # If the tutor has available slots, the student proposal can be accepted.

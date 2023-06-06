@@ -30,21 +30,23 @@ class SamplerMatching:
         assert self.num_samples in [5, 10]
 
         if self.num_samples == 5:
-            self.sample_weights = [0.6, 0.25, 0.1, 0.025, 0.025]
+            self.sample_weights = np.array([0.6, 0.25, 0.1, 0.025, 0.025])
 
         if self.num_samples == 10:
-            self.sample_weights = [
-                0.3,
-                0.2,
-                0.1,
-                0.075,
-                0.075,
-                0.05,
-                0.05,
-                0.05,
-                0.05,
-                0.05,
-            ]
+            self.sample_weights = np.array(
+                [
+                    0.3,
+                    0.2,
+                    0.1,
+                    0.075,
+                    0.075,
+                    0.05,
+                    0.05,
+                    0.05,
+                    0.05,
+                    0.05,
+                ]
+            )
 
         assert sum(self.sample_weights) == 1.0
 
@@ -74,11 +76,11 @@ class SamplerMatching:
                 if len(tutor_showcase) == self.num_samples:
                     break
 
-            print(student.id, tutor_showcase)
-
             # Sample a tutor from this list with weights
             tutor_sample = np.random.choice(
-                a=tutor_showcase, p=self.sample_weights[: len(tutor_showcase)]
+                a=tutor_showcase,
+                p=self.sample_weights[: len(tutor_showcase)]
+                / np.sum(self.sample_weights[: len(tutor_showcase)]),
             )
             # Assign the match
             student.current_match = tutor_sample
