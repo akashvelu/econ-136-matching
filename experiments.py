@@ -333,8 +333,8 @@ def run_matching_pool_exp():
 
 
 def run_ratios_exp():
-    ns_list = [50, 50, 50, 50]
-    nt_list = [100, 50, 40, 30]
+    ns_list = [50, 60, 70, 80, 100]
+    nt_list = [100, 90, 80, 70, 50]
     seeds = [1, 2, 3]
     nts_list = [3, 5]
     dim = 100
